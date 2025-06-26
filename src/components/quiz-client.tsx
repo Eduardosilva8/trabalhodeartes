@@ -16,6 +16,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { useToast } from '@/hooks/use-toast';
 import { generateDonatelloQuiz } from '@/app/actions';
 import type { GenerateDonatelloQuizOutput } from '@/ai/flows/generate-donatello-quiz';
+import { cn } from '@/lib/utils';
 
 type QuizQuestion = GenerateDonatelloQuizOutput['quiz'][0];
 type QuizState = 'setup' | 'loading' | 'active' | 'results';
@@ -133,13 +134,13 @@ export function QuizClient() {
       case 'setup':
         return (
           <motion.div key="setup" initial="hidden" animate="visible" exit="exit" variants={cardVariants}>
-            <Card className="w-full max-w-lg shadow-xl">
+            <Card className="w-full max-w-lg shadow-2xl">
               <CardHeader className="text-center">
                 <div className="flex justify-center items-center gap-3">
-                  <Hammer className="w-10 h-10 text-primary" />
-                  <CardTitle className="text-3xl font-headline">Mestre do Quiz Donatello</CardTitle>
+                  <Hammer className="w-12 h-12 text-primary" />
+                  <CardTitle className="text-4xl font-headline">Mestre do Quiz Donatello</CardTitle>
                 </div>
-                <CardDescription className="pt-2">Teste seus conhecimentos sobre o grande mestre do Renascimento. Selecione um tópico e comece!</CardDescription>
+                <CardDescription className="pt-2 text-base">Teste seus conhecimentos sobre o grande mestre do Renascimento. Selecione um tópico e comece!</CardDescription>
               </CardHeader>
               <CardContent>
                 <Form {...form}>
@@ -149,10 +150,10 @@ export function QuizClient() {
                       name="topic"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Escolha um Tópico</FormLabel>
+                          <FormLabel className="text-lg">Escolha um Tópico</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
-                              <SelectTrigger>
+                              <SelectTrigger className="text-base">
                                 <SelectValue placeholder="Selecione um tópico..." />
                               </SelectTrigger>
                             </FormControl>
@@ -188,12 +189,12 @@ export function QuizClient() {
         
         return (
           <motion.div key={currentQuestionIndex} initial="hidden" animate="visible" exit="exit" variants={cardVariants}>
-            <Card className="w-full max-w-2xl shadow-xl">
+            <Card className="w-full max-w-2xl shadow-2xl">
               <CardHeader>
                 <p className="text-sm text-muted-foreground font-headline">Pergunta {currentQuestionIndex + 1} de {quiz?.length}</p>
-                <CardTitle className="text-2xl pt-2 font-headline">{currentQuestion.question}</CardTitle>
+                <CardTitle className="text-3xl pt-2 font-headline">{currentQuestion.question}</CardTitle>
                 <div className="pt-4">
-                  <Progress value={(timeLeft / QUESTION_TIME) * 100} className="w-full" />
+                  <Progress value={(timeLeft / QUESTION_TIME) * 100} className="w-full h-2" />
                   <p className="text-right text-xs text-muted-foreground pt-1">{timeLeft}s restantes</p>
                 </div>
               </CardHeader>
@@ -202,28 +203,29 @@ export function QuizClient() {
                   value={selectedAnswer ?? ''}
                   onValueChange={setSelectedAnswer}
                   disabled={answerStatus !== 'unanswered'}
+                  className="space-y-4"
                 >
                   {options.map((option, index) => {
                     const isCorrect = option === currentQuestion.answer;
                     const isSelected = option === selectedAnswer;
                     
-                    let optionSpecificClasses = '';
-                    if (answerStatus !== 'unanswered') {
-                      if (isCorrect) {
-                        optionSpecificClasses = 'border-success bg-success/20';
-                      } else if (isSelected) {
-                        optionSpecificClasses = 'border-destructive bg-destructive/20';
-                      }
-                    }
-                    
                     return (
-                      <div key={index} className={`flex items-center space-x-2 p-3 rounded-lg border transition-colors duration-300 ${optionSpecificClasses}`}>
-                        <RadioGroupItem value={option} id={`option-${index}`} />
-                        <Label htmlFor={`option-${index}`} className="flex-1 text-base cursor-pointer">
+                      <div
+                        key={index}
+                        className={cn(
+                          "flex cursor-pointer items-center space-x-4 rounded-lg border-2 p-4 transition-colors has-[input:disabled]:cursor-not-allowed has-[input:disabled]:opacity-60",
+                          answerStatus === 'unanswered' && "hover:bg-accent/10",
+                          isSelected && answerStatus === 'unanswered' && "border-primary bg-primary/5",
+                          answerStatus !== 'unanswered' && isCorrect && "border-success bg-success/10 text-success font-semibold",
+                          answerStatus !== 'unanswered' && isSelected && !isCorrect && "border-destructive bg-destructive/10 text-destructive font-semibold",
+                        )}
+                      >
+                        <RadioGroupItem value={option} id={`option-${index}`} className="h-6 w-6" />
+                        <Label htmlFor={`option-${index}`} className="flex-1 text-lg cursor-pointer">
                           {option}
-                          {answerStatus !== 'unanswered' && isCorrect && <CheckCircle className="inline ml-2 text-success" />}
-                          {answerStatus !== 'unanswered' && isSelected && !isCorrect && <XCircle className="inline ml-2 text-destructive" />}
                         </Label>
+                        {answerStatus !== 'unanswered' && isCorrect && <CheckCircle className="ml-auto h-6 w-6 text-success" />}
+                        {answerStatus !== 'unanswered' && isSelected && !isCorrect && <XCircle className="ml-auto h-6 w-6 text-destructive" />}
                       </div>
                     )
                   })}
@@ -234,6 +236,7 @@ export function QuizClient() {
                   onClick={handleAnswerSubmit} 
                   disabled={!selectedAnswer || answerStatus !== 'unanswered'}
                   className="w-full"
+                  size="lg"
                 >
                   Enviar Resposta
                 </Button>
@@ -256,17 +259,17 @@ export function QuizClient() {
         
         return (
           <motion.div key="results" initial="hidden" animate="visible" exit="exit" variants={cardVariants}>
-            <Card className="w-full max-w-lg text-center shadow-xl">
+            <Card className="w-full max-w-lg text-center shadow-2xl">
               <CardHeader>
-                <div className="flex justify-center items-center gap-3">
-                  <Trophy className="w-12 h-12 text-yellow-500" />
-                  <CardTitle className="text-3xl font-headline">Quiz Finalizado!</CardTitle>
+                <div className="flex justify-center items-center flex-col gap-4">
+                  <Trophy className="w-20 h-20 text-yellow-400" />
+                  <CardTitle className="text-4xl font-headline">Quiz Finalizado!</CardTitle>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-xl">Sua pontuação final é:</p>
-                <p className="text-6xl font-bold text-primary">{finalScore} / {totalQuestions}</p>
-                <p className="text-muted-foreground">{feedbackMessage}</p>
+                <p className="text-7xl font-bold text-primary">{finalScore} / {totalQuestions}</p>
+                <p className="text-lg text-muted-foreground">{feedbackMessage}</p>
               </CardContent>
               <CardFooter>
                 <Button onClick={handlePlayAgain} className="w-full" size="lg">Jogar Novamente</Button>
