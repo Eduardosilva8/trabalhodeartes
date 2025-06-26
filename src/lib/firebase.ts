@@ -13,14 +13,12 @@ export const firebaseConfig = {
 let app: FirebaseApp | null = null;
 let auth: Auth | null = null;
 
-// Only initialize Firebase if the API key is provided
 if (firebaseConfig.apiKey) {
   try {
     app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
     auth = getAuth(app);
   } catch (error) {
     console.error("Falha ao inicializar o Firebase. Verifique sua configuração:", error);
-    // Keep app and auth as null if initialization fails
     app = null;
     auth = null;
   }
