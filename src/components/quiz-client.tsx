@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Hammer, Loader2, Trophy, Palette, Users, Scroll, CheckCircle, XCircle } from 'lucide-react';
+import { Hammer, Loader2, Trophy, Palette, Users, Scroll, CheckCircle, XCircle, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -159,7 +159,7 @@ export function QuizClient() {
                               <SelectItem value="geral"><Scroll className="inline mr-2 h-4 w-4" />Geral</SelectItem>
                               <SelectItem value="esculturas"><Palette className="inline mr-2 h-4 w-4" />Esculturas</SelectItem>
                               <SelectItem value="vida"><Users className="inline mr-2 h-4 w-4" />Vida e Carreira</SelectItem>
-                              <SelectItem value="periodo"><Users className="inline mr-2 h-4 w-4" />Período Histórico</SelectItem>
+                              <SelectItem value="periodo"><Calendar className="inline mr-2 h-4 w-4" />Período Histórico</SelectItem>
                             </SelectContent>
                           </Select>
                           <FormMessage />
@@ -207,20 +207,23 @@ export function QuizClient() {
                   {options.map((option, index) => {
                     const isCorrect = option === currentQuestion.answer;
                     const isSelected = option === selectedAnswer;
-                    let optionBg = 'bg-transparent';
-                    if (answerStatus !== 'unanswered' && isSelected) {
-                      optionBg = isCorrect ? 'bg-green-100 dark:bg-green-900' : 'bg-red-100 dark:bg-red-900';
-                    } else if (answerStatus !== 'unanswered' && isCorrect) {
-                      optionBg = 'bg-green-100 dark:bg-green-900';
+                    
+                    let optionSpecificClasses = '';
+                    if (answerStatus !== 'unanswered') {
+                      if (isCorrect) {
+                        optionSpecificClasses = 'border-success bg-success/20';
+                      } else if (isSelected) {
+                        optionSpecificClasses = 'border-destructive bg-destructive/20';
+                      }
                     }
                     
                     return (
-                      <div key={index} className={`flex items-center space-x-2 p-3 rounded-lg border transition-colors duration-300 ${optionBg}`}>
+                      <div key={index} className={`flex items-center space-x-2 p-3 rounded-lg border transition-colors duration-300 ${optionSpecificClasses}`}>
                         <RadioGroupItem value={option} id={`option-${index}`} />
                         <Label htmlFor={`option-${index}`} className="flex-1 text-base cursor-pointer">
                           {option}
-                          {answerStatus !== 'unanswered' && isSelected && (isCorrect ? <CheckCircle className="inline ml-2 text-green-600" /> : <XCircle className="inline ml-2 text-red-600" />)}
-                          {answerStatus !== 'unanswered' && !isSelected && isCorrect && <CheckCircle className="inline ml-2 text-green-600" />}
+                          {answerStatus !== 'unanswered' && isCorrect && <CheckCircle className="inline ml-2 text-success" />}
+                          {answerStatus !== 'unanswered' && isSelected && !isCorrect && <XCircle className="inline ml-2 text-destructive" />}
                         </Label>
                       </div>
                     )
