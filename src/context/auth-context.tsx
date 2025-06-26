@@ -20,7 +20,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const isFirebaseConfigured = !!auth;
-  const areEnvVarsPresent = !!firebaseConfig.apiKey;
+  const areEnvVarsPresent = !!firebaseConfig.apiKey && !!firebaseConfig.authDomain;
   const isUsingPlaceholder = areEnvVarsPresent && (
     firebaseConfig.apiKey?.includes("sua-chave-de-api") ||
     firebaseConfig.authDomain?.includes("seu-dominio-auth")

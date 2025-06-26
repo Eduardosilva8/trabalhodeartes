@@ -13,7 +13,7 @@ export const firebaseConfig = {
 let app: FirebaseApp | null = null;
 let auth: Auth | null = null;
 
-if (firebaseConfig.apiKey) {
+if (firebaseConfig.apiKey && firebaseConfig.authDomain) {
   try {
     app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
     auth = getAuth(app);
