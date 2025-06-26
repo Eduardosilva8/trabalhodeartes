@@ -43,6 +43,15 @@ export function QuizClient() {
     },
   });
 
+  const currentQuestion = useMemo(() => quiz?.[currentQuestionIndex], [quiz, currentQuestionIndex]);
+
+  const options = useMemo(() => {
+    if (!currentQuestion) {
+      return [];
+    }
+    return [...currentQuestion.options].sort(() => Math.random() - 0.5);
+  }, [currentQuestion]);
+
   const handleStartQuiz = async (values: z.infer<typeof formSchema>) => {
     setQuizState('loading');
     try {
@@ -90,17 +99,14 @@ export function QuizClient() {
   }, [currentQuestionIndex, quiz]);
 
   const handleAnswerSubmit = () => {
-    if (!selectedAnswer) return;
+    if (!selectedAnswer || !currentQuestion) return;
 
-    const currentQuestion = quiz?.[currentQuestionIndex];
-    if (currentQuestion) {
-      const isCorrect = selectedAnswer === currentQuestion.answer;
-      setAnswerStatus(isCorrect ? 'correct' : 'incorrect');
-      if (isCorrect) {
-        setScore((prev) => prev + 1);
-      }
-      setTimeout(proceedToNextQuestion, 1500);
+    const isCorrect = selectedAnswer === currentQuestion.answer;
+    setAnswerStatus(isCorrect ? 'correct' : 'incorrect');
+    if (isCorrect) {
+      setScore((prev) => prev + 1);
     }
+    setTimeout(proceedToNextQuestion, 1500);
   };
   
   useEffect(() => {
@@ -183,9 +189,7 @@ export function QuizClient() {
         );
       
       case 'active':
-        const currentQuestion = quiz?.[currentQuestionIndex];
         if (!currentQuestion) return null;
-        const options = useMemo(() => [...currentQuestion.options].sort(() => Math.random() - 0.5), [currentQuestion]);
         
         return (
           <motion.div key={currentQuestionIndex} initial="hidden" animate="visible" exit="exit" variants={cardVariants}>
