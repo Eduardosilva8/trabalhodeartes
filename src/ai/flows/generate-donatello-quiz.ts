@@ -59,6 +59,26 @@ const prompt = ai.definePrompt({
 
       Gere o quiz no formato JSON solicitado.
       `,
+  config: {
+    safetySettings: [
+      {
+        category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+        threshold: 'BLOCK_ONLY_HIGH',
+      },
+      {
+        category: 'HARM_CATEGORY_HATE_SPEECH',
+        threshold: 'BLOCK_ONLY_HIGH',
+      },
+      {
+        category: 'HARM_CATEGORY_HARASSMENT',
+        threshold: 'BLOCK_ONLY_HIGH',
+      },
+      {
+        category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+        threshold: 'BLOCK_ONLY_HIGH',
+      },
+    ],
+  },
 });
 
 const generateDonatelloQuizFlow = ai.defineFlow(
@@ -69,6 +89,9 @@ const generateDonatelloQuizFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await prompt(input);
-    return output!;
+    if (!output) {
+      throw new Error('A IA não conseguiu gerar o quiz. Tente novamente.');
+    }
+    return output;
   }
 );
