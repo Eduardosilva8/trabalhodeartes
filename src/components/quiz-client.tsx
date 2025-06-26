@@ -214,7 +214,7 @@ export function QuizClient() {
                         key={index}
                         className={cn(
                           "flex cursor-pointer items-center space-x-4 rounded-lg border-2 p-4 transition-colors has-[input:disabled]:cursor-not-allowed has-[input:disabled]:opacity-60",
-                          answerStatus === 'unanswered' && "hover:bg-accent/10",
+                          answerStatus === 'unanswered' && "hover:bg-accent/50",
                           isSelected && answerStatus === 'unanswered' && "border-primary bg-primary/5",
                           answerStatus !== 'unanswered' && isCorrect && "border-success bg-success/10 text-success font-semibold",
                           answerStatus !== 'unanswered' && isSelected && !isCorrect && "border-destructive bg-destructive/10 text-destructive font-semibold",

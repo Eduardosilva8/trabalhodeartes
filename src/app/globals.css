@@ -20,8 +20,8 @@ body {
     --secondary-foreground: 212 16% 16%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 212 33% 28%; /* Light Blue */
-    --accent-foreground: 0 0% 98%;
+    --accent: 212 33% 92%; /* Light Blue */
+    --accent-foreground: 212 16% 16%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
     --success: 140 80% 40%;
@@ -57,7 +57,7 @@ body {
     --secondary-foreground: 0 0% 98%;
     --muted: 212 33% 18%;
     --muted-foreground: 0 0% 63.9%;
-    --accent: 212 33% 40%;
+    --accent: 212 33% 28%; /* Light Blue */
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;

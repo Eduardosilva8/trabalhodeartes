@@ -1,10 +1,10 @@
 'use server';
 /**
- * @fileOverview Fluxo de IA para gerar um quiz sobre Donatello.
+ * @fileOverview A flow for generating a quiz about Donatello.
  *
- * - generateDonatelloQuiz - Uma função que gera um quiz sobre Donatello.
- * - GenerateDonatelloQuizInput - O tipo de entrada para a função generateDonatelloQuiz.
- * - GenerateDonatelloQuizOutput - O tipo de retorno para a função generateDonatelloQuiz.
+ * - generateDonatelloQuiz - A function that generates a quiz about Donatello.
+ * - GenerateDonatelloQuizInput - The input type for the generateDonatelloQuiz function.
+ * - GenerateDonatelloQuizOutput - The return type for the generateDonatelloQuiz function.
  */
 
 import {ai} from '@/ai/genkit';
@@ -14,11 +14,11 @@ const GenerateDonatelloQuizInputSchema = z.object({
   topic: z
     .string()
     .optional()
-    .describe('Tópico opcional para focar o quiz, como esculturas, vida ou período.'),
+    .describe('Optional topic to focus the quiz on, such as sculptures, life, or period.'),
   numQuestions: z
     .number()
     .default(5)
-    .describe('O número de perguntas a serem geradas para o quiz.'),
+    .describe('The number of questions to generate for the quiz.'),
 });
 export type GenerateDonatelloQuizInput = z.infer<
   typeof GenerateDonatelloQuizInputSchema
@@ -28,12 +28,12 @@ const GenerateDonatelloQuizOutputSchema = z.object({
   quiz: z
     .array(
       z.object({
-        question: z.string().describe('A pergunta do quiz.'),
-        options: z.array(z.string()).describe('As opções de múltipla escolha.'),
-        answer: z.string().describe('A resposta correta para a pergunta.'),
+        question: z.string().describe('The quiz question.'),
+        options: z.array(z.string()).describe('The multiple-choice options.'),
+        answer: z.string().describe('The correct answer to the question.'),
       })
     )
-    .describe('Uma lista de perguntas, opções e respostas do quiz.'),
+    .describe('A list of quiz questions, options, and answers.'),
 });
 export type GenerateDonatelloQuizOutput = z.infer<
   typeof GenerateDonatelloQuizOutputSchema
@@ -49,13 +49,13 @@ const prompt = ai.definePrompt({
   name: 'generateDonatelloQuizPrompt',
   input: {schema: GenerateDonatelloQuizInputSchema},
   output: {schema: GenerateDonatelloQuizOutputSchema},
-  prompt: `Você é um especialista em gerar quizzes especializado no escultor renascentista italiano Donatello. Crie um quiz com o número especificado de perguntas. Para cada pergunta, forneça várias opções de múltipla escolha e certifique-se de que a resposta correta seja uma das opções fornecidas. O quiz deve ser inteiramente em português e focado exclusivamente no artista, não em outras figuras com o mesmo nome.
+  prompt: `You are an expert quiz generator specializing in the Italian Renaissance sculptor Donatello. Create a quiz with the specified number of questions. For each question, provide multiple choice options and ensure the correct answer is one of the provided options. The quiz should be entirely in Portuguese and focused exclusively on the artist, not other figures with the same name.
 
       {{#if topic}}
-      O quiz deve focar no seguinte tópico: {{topic}}.
+      The quiz should focus on the following topic: {{topic}}.
       {{/if}}
 
-      Número de perguntas: {{numQuestions}}
+      Number of questions: {{numQuestions}}
       `,
   config: {
     safetySettings: [
@@ -88,7 +88,7 @@ const generateDonatelloQuizFlow = ai.defineFlow(
   async input => {
     const {output} = await prompt(input);
     if (!output) {
-      throw new Error('A IA não conseguiu gerar o quiz. Tente novamente.');
+      throw new Error('AI failed to generate the quiz. Please try again.');
     }
     return output;
   }
