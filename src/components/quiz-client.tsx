@@ -62,7 +62,7 @@ export function QuizClient() {
       };
       const result = await generateDonatelloQuiz({
         topic: topicMap[values.topic] || undefined,
-        numQuestions: 5,
+        numQuestions: 12,
       });
       setQuiz(result.quiz);
       setScore(0);
@@ -248,6 +248,17 @@ export function QuizClient() {
         );
 
       case 'results':
+        const finalScore = score;
+        const totalQuestions = quiz?.length ?? 0;
+        const percentage = totalQuestions > 0 ? (finalScore / totalQuestions) * 100 : 0;
+        let feedbackMessage = "Continue estudando para se tornar um mestre!";
+
+        if (percentage >= 80) {
+          feedbackMessage = "Excelente trabalho! Você é um verdadeiro mestre de Donatello!";
+        } else if (percentage > 50) {
+          feedbackMessage = "Bom trabalho! Você está no caminho certo.";
+        }
+        
         return (
           <motion.div key="results" initial="hidden" animate="visible" exit="exit" variants={cardVariants}>
             <Card className="w-full max-w-lg text-center shadow-xl">
@@ -259,8 +270,8 @@ export function QuizClient() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-xl">Sua pontuação final é:</p>
-                <p className="text-6xl font-bold text-primary">{score} / {quiz?.length}</p>
-                <p className="text-muted-foreground">{score > 3 ? "Excelente trabalho!" : "Continue estudando para se tornar um mestre!"}</p>
+                <p className="text-6xl font-bold text-primary">{finalScore} / {totalQuestions}</p>
+                <p className="text-muted-foreground">{feedbackMessage}</p>
               </CardContent>
               <CardFooter>
                 <Button onClick={handlePlayAgain} className="w-full" size="lg">Jogar Novamente</Button>
