@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { onAuthStateChanged, type User, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { auth, firebaseConfig } from '@/lib/firebase';
 import { Loader2, Terminal } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -20,6 +20,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const isFirebaseConfigured = !!auth;
+  const areEnvVarsPresent = !!firebaseConfig.apiKey;
 
   useEffect(() => {
     if (auth) {
@@ -86,9 +87,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               <AlertTitle>Ação Necessária</AlertTitle>
               <AlertDescription>
                 <div className="space-y-2">
-                  <p>
-                    Parece que as chaves de API do seu projeto Firebase não foram adicionadas ao ambiente.
-                  </p>
+                  {areEnvVarsPresent ? (
+                    <p>
+                      A configuração do Firebase foi encontrada, mas a inicialização falhou. Verifique se as credenciais em seu arquivo <code>.env</code> estão corretas e se o projeto Firebase está configurado para aceitar requisições deste domínio.
+                    </p>
+                  ) : (
+                    <p>
+                      Parece que as chaves de API do seu projeto Firebase não foram adicionadas ao ambiente.
+                    </p>
+                  )}
                   <p>
                     Por favor, adicione suas credenciais do Firebase ao arquivo <code>.env</code> na raiz do seu projeto e reinicie o servidor de desenvolvimento.
                   </p>
