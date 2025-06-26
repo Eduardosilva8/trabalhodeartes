@@ -21,6 +21,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const isFirebaseConfigured = !!auth;
   const areEnvVarsPresent = !!firebaseConfig.apiKey;
+  const isUsingPlaceholder = areEnvVarsPresent && (
+    firebaseConfig.apiKey?.includes("sua-chave-de-api") ||
+    firebaseConfig.authDomain?.includes("seu-dominio-auth")
+  );
 
   useEffect(() => {
     if (auth) {
@@ -87,7 +91,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               <AlertTitle>Ação Necessária</AlertTitle>
               <AlertDescription>
                 <div className="space-y-2">
-                  {areEnvVarsPresent ? (
+                  {isUsingPlaceholder ? (
+                    <p>
+                      Você parece estar usando valores de exemplo em seu arquivo <code>.env</code>. Por favor, substitua os valores de exemplo por suas credenciais reais do Firebase.
+                    </p>
+                  ) : areEnvVarsPresent ? (
                     <p>
                       A configuração do Firebase foi encontrada, mas a inicialização falhou. Verifique se as credenciais em seu arquivo <code>.env</code> estão corretas e se o projeto Firebase está configurado para aceitar requisições deste domínio.
                     </p>
