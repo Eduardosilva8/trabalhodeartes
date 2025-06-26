@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Hammer, Loader2, Trophy, Palette, Users, Scroll, CheckCircle, XCircle, Calendar } from 'lucide-react';
+import { Hammer, Loader2, Trophy, Palette, Users, Scroll, CheckCircle, XCircle, Calendar, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -16,6 +16,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { useToast } from '@/hooks/use-toast';
 import { generateDonatelloQuiz } from '@/app/actions';
 import type { GenerateDonatelloQuizOutput } from '@/ai/flows/generate-donatello-quiz';
+import { useAuth } from '@/context/auth-context';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 type QuizQuestion = GenerateDonatelloQuizOutput['quiz'][0];
 type QuizState = 'setup' | 'loading' | 'active' | 'results';
@@ -27,6 +30,7 @@ const formSchema = z.object({
 const QUESTION_TIME = 20;
 
 export function QuizClient() {
+  const { user, signInWithGoogle, logout } = useAuth();
   const [quizState, setQuizState] = useState<QuizState>('setup');
   const [quiz, setQuiz] = useState<QuizQuestion[] | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -55,13 +59,8 @@ export function QuizClient() {
   const handleStartQuiz = async (values: z.infer<typeof formSchema>) => {
     setQuizState('loading');
     try {
-      const topicMap: { [key: string]: string } = {
-        'esculturas': 'sculptures',
-        'vida': 'life',
-        'periodo': 'time period'
-      };
       const result = await generateDonatelloQuiz({
-        topic: topicMap[values.topic] || undefined,
+        topic: values.topic === 'geral' ? undefined : values.topic,
         numQuestions: 12,
       });
       setQuiz(result.quiz);
@@ -285,9 +284,53 @@ export function QuizClient() {
     }
   };
 
+  if (!user) {
+    return (
+      <AnimatePresence mode="wait">
+        <motion.div key="login" initial="hidden" animate="visible" exit="exit" variants={cardVariants}>
+          <Card className="w-full max-w-md shadow-xl">
+            <CardHeader className="text-center">
+              <div className="flex justify-center items-center gap-3">
+                <Hammer className="w-10 h-10 text-primary" />
+                <CardTitle className="text-3xl font-headline">Bem-vindo ao Mestre do Quiz Donatello</CardTitle>
+              </div>
+              <CardDescription className="pt-2">Faça login para testar seus conhecimentos sobre o grande mestre do Renascimento.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button onClick={signInWithGoogle} className="w-full text-lg" size="lg">
+                <svg className="mr-2 h-4 w-4" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="google" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 488 512"><path fill="currentColor" d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 126 23.4 172.9 61.9l-69.2 69.2c-20.3-19.3-46-30.8-76.4-30.8-58.2 0-104.8 47.9-104.8 106.8s46.6 106.8 104.8 106.8c68.2 0 97.9-52.1 101.4-78.2H248v-69.1h239.9c1.4 12.3 2.1 24.9 2.1 37.9z"></path></svg>
+                Entrar com Google
+              </Button>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </AnimatePresence>
+    )
+  }
+
   return (
-    <AnimatePresence mode="wait">
-      {renderContent()}
-    </AnimatePresence>
+    <>
+       <div className="absolute top-4 right-4 z-10">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+              <Avatar className="h-10 w-10">
+                <AvatarImage src={user.photoURL ?? ''} alt={user.displayName ?? 'User'} />
+                <AvatarFallback>{user.displayName?.charAt(0).toUpperCase() ?? 'U'}</AvatarFallback>
+              </Avatar>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={logout}>
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Sair</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+      <AnimatePresence mode="wait">
+        {renderContent()}
+      </AnimatePresence>
+    </>
   );
 }
