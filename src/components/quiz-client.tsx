@@ -24,7 +24,7 @@ const formSchema = z.object({
   topic: z.string().default('geral'),
 });
 
-const QUESTION_TIME = 20; // seconds
+const QUESTION_TIME = 20;
 
 export function QuizClient() {
   const [quizState, setQuizState] = useState<QuizState>('setup');
@@ -142,7 +142,7 @@ export function QuizClient() {
               <CardHeader className="text-center">
                 <div className="flex justify-center items-center gap-3">
                   <Hammer className="w-10 h-10 text-primary" />
-                  <CardTitle className="text-3xl font-headline">Donatello Quiz Master</CardTitle>
+                  <CardTitle className="text-3xl font-headline">Mestre do Quiz Donatello</CardTitle>
                 </div>
                 <CardDescription className="pt-2">Teste seus conhecimentos sobre o grande mestre do Renascimento. Selecione um tópico e comece!</CardDescription>
               </CardHeader>
