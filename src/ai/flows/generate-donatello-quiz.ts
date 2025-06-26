@@ -25,14 +25,15 @@ export type GenerateDonatelloQuizInput = z.infer<
 >;
 
 const GenerateDonatelloQuizOutputSchema = z.object({
-  quiz: z.array(
-    z.object({
-      question: z.string().describe('A pergunta do quiz.'),
-      options: z.array(z.string()).describe('As opções de múltipla escolha.'),
-      answer: z.string().describe('A resposta correta para a pergunta.'),
-    })
-  ).
-describe('Uma lista de perguntas, opções e respostas do quiz.'),
+  quiz: z
+    .array(
+      z.object({
+        question: z.string().describe('A pergunta do quiz.'),
+        options: z.array(z.string()).describe('As opções de múltipla escolha.'),
+        answer: z.string().describe('A resposta correta para a pergunta.'),
+      })
+    )
+    .describe('Uma lista de perguntas, opções e respostas do quiz.'),
 });
 export type GenerateDonatelloQuizOutput = z.infer<
   typeof GenerateDonatelloQuizOutputSchema
@@ -56,9 +57,8 @@ const prompt = ai.definePrompt({
 
       Número de perguntas: {{numQuestions}}
 
-      O quiz deve estar em formato JSON e estar em conformidade com o seguinte schema:
-      ${JSON.stringify(GenerateDonatelloQuizOutputSchema.describe)}
-      `, // Ensure schema is correctly stringified for the prompt.
+      Gere o quiz no formato JSON solicitado.
+      `,
 });
 
 const generateDonatelloQuizFlow = ai.defineFlow(
