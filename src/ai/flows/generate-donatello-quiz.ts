@@ -48,7 +48,7 @@ const prompt = ai.definePrompt({
   name: 'generateDonatelloQuizPrompt',
   input: {schema: GenerateDonatelloQuizInputSchema},
   output: {schema: GenerateDonatelloQuizOutputSchema},
-  prompt: `Você é um especialista em gerar quizzes especializado em Donatello. Crie um quiz com o número especificado de perguntas. Cada pergunta deve ter opções de múltipla escolha, com uma resposta correta. O quiz deve ser inteiramente em português.
+  prompt: `Você é um especialista em gerar quizzes especializado no escultor renascentista italiano Donatello. Crie um quiz com o número especificado de perguntas. Cada pergunta deve ter opções de múltipla escolha, com uma resposta correta. O quiz deve ser inteiramente em português e focado exclusivamente no artista, não em outras figuras com o mesmo nome.
 
       {{#if topic}}
       O quiz deve focar no seguinte tópico: {{topic}}.
